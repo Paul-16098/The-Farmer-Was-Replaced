@@ -27,3 +27,4 @@ while True:
     full_weird_substance()
     full_gold(300)
     full_cactus()
+    full_dinosaur()
