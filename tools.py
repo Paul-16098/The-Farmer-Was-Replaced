@@ -62,7 +62,7 @@ def full_sunflower() -> None:
     for_all(harvest)
 
 
-def full_pumpkin() -> None:
+def old_full_pumpkin() -> None:
     wait_all(for_all(plant_pumpkin))
 
     def check_pumpkin() -> set[tuple[int, int]]:
@@ -86,6 +86,27 @@ def full_pumpkin() -> None:
             break
         wait_all(fix_pumpkin(bad_pumpkin))
 
+    harvest()
+
+
+def full_pumpkin():
+    wait_all(for_all(plant_pumpkin))
+
+    def sep_do() -> bool:
+        if not can_harvest():
+            plant(Entities.Pumpkin)
+            sleep(5)
+            return False
+        return True
+
+    while True:
+        r = True
+        rl: list[list[bool]] = wait_all(for_all(sep_do))
+        for rll in rl:
+            for rllv in rll:
+                r = r and rllv
+        if r:
+            break
     harvest()
 
 
