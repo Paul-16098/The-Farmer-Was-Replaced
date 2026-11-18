@@ -9,6 +9,7 @@ from __builtins__ import (
     North,
     South,
     West,
+    can_harvest,
     can_move,
     get_cost,
     get_ground_type,
@@ -205,11 +206,13 @@ def while_unit(item: Item, unit: int, do) -> bool:
 
 
 def for_all(f, force_not_spawn: bool = False) -> list[Drone]:
-    def row(x):
+    def row(x) -> list:
         goto(x, None)
+        rl = []
         for y in range(get_world_size()):
             goto(None, y)
-            f()
+            rl.append(f())
+        return rl
 
     return for_wordsize(row, force_not_spawn)
 
@@ -219,9 +222,11 @@ def get_xy() -> tuple[int, int]:
     return (get_pos_x(), get_pos_y())
 
 
-def wait_all(dl: list[Drone]):
+def wait_all(dl: list[Drone]) -> list:
+    r = []
     for d in dl:
-        wait_for(d)
+        r.append(wait_for(d))
+    return r
 
 
 def sort_cactus_x(y=0) -> None:
