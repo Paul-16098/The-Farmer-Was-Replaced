@@ -252,3 +252,8 @@ def sort_cactus_y(x=0) -> None:
     # elif (up_size > now_size) and not (y == 0):
     #     swap(South)
     return sort_cactus_y(x + 1)
+
+
+def sleep(t: int) -> None:
+    for _ in range(t):
+        can_harvest()
