@@ -9,6 +9,7 @@ from __builtins__ import (
     North,
     South,
     West,
+    can_move,
     get_cost,
     get_ground_type,
     get_pos_x,
@@ -53,54 +54,69 @@ def item2entities(item: Item) -> Entity | None:
         return rd[item]
 
 
-def goto(x: int | None, y: int | None) -> None:
+def goto(x: int | None, y: int | None):
     ws = get_world_size()
 
     if ((x or 0) >= ws) or ((y or 0) >= ws):
-        quick_print("WARN: x or y >= word size", (x, y), ws)
+        quick_print("WARN: x or y >= world size", (x, y), ws)
         return
 
-    # quick_print("ws=", ws)
-
-    while True:
+    max_steps = ws * 4  # 防止死循环
+    for _ in range(max_steps):
         nx = get_pos_x()
         ny = get_pos_y()
 
         # quick_print(nx, ny, x, y)
 
-        # Exit condition when target is reached
         if (nx == x or x == None) and (ny == y or y == None):
-            break
+            return
 
-        # X-axis movement
+        # X 轴
         if (x != None) and (nx != x):
-            dx = x - nx
-
-            # If the direct distance is more than half the grid, wrap around
+            dx: int = x - nx
             if dx > ws / 2:
                 dx -= ws
             elif dx < -ws / 2:
                 dx += ws
 
+            d = None
             if dx > 0:
-                move(East)
+                d = East
             elif dx < 0:
-                move(West)
+                d = West
 
-        # Y-axis movement
+            if d != None:
+                if can_move(d):
+                    move(d)
+                else:
+                    quick_print("X方向被挡住", d, "当前", (nx, ny), "目标", (x, y))
+                    return
+
+        # Y 轴
         if (y != None) and (ny != y):
-            dy = y - ny
-
-            # If the direct distance is more than half the grid, wrap around
+            dy: int = y - ny
             if dy > ws / 2:
                 dy -= ws
             elif dy < -ws / 2:
                 dy += ws
 
+            d = None
             if dy > 0:
-                move(North)
+                d = North
             elif dy < 0:
-                move(South)
+                d = South
+
+            if d != None:
+                if can_move(d):
+                    move(d)
+                else:
+                    quick_print("Y方向被挡住", d, "当前", (nx, ny), "目标", (x, y))
+                    quick_print(
+                        "North可走?", can_move(North), "South可走?", can_move(South)
+                    )
+                    return
+
+    quick_print("goto 超过最大步数", (get_pos_x(), get_pos_y()), (x, y))
 
 
 # time: 201 tick or 1
